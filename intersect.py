@@ -7,6 +7,7 @@ class Inter(object):
         self.upComm = []
         self.inComm = []
         self.solution = {}
+        self.solution2 = {}
 
     def __repr__(self):
         return '({}/S:{})'.format(self.idx, '='.join([x.name for x in self.upComm]) )

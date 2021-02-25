@@ -9,23 +9,31 @@ def dump(filename, interList):
     f = open(filename.replace('.txt', '.out'), 'w+')
     filteredInters = []
     for inter in interList:
-        if len(inter.solution) > 0:
+        if len(inter.solution2) > 0:
             filteredInters.append(inter)
     
     f.write('{}\n'.format(len(filteredInters)))
     for inter in filteredInters:
         f.write('{}\n'.format(inter.idx))
-        f.write('{}\n'.format(len(inter.solution)))
-        for street, num in inter.solution.items():
+        f.write('{}\n'.format(len(inter.solution2)))
+        for street, num in inter.solution2.items():
             f.write('{} {}\n'.format(street, num))
     f.close()
 
 def solve( interList, streetList, carList):
     for inter in interList:
+        total = 0
         for street in inter.inComm:
             score = street.numCar
             if score != 0:
                 inter.solution[street.name] = street.numCar * street.lenght
+                total += street.numCar * street.lenght    
+        
+        for streetName, num in inter.solution.items():
+            if int(30 * num/total) > 0: 
+                inter.solution2[streetName] = int(30 * num/total)
+
+
         print(inter.idx, ['{}:{}'.format(x.name,x.numCar) for x in inter.inComm])
 
 def readF(filename):
