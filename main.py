@@ -1,4 +1,4 @@
-
+from operator import itemgetter
 from car import Car
 from street import Street
 from intersect import Inter
@@ -6,7 +6,7 @@ from tqdm import tqdm
 import numpy as np
 
 def dump(filename, interList):
-    f = open(filename.replace('.txt', '.out'), 'w+')
+    f = open(filename.replace('.txt', '.out').replace('input/', 'output/'), 'w+')
     filteredInters = []
     for inter in interList:
         if len(inter.solution2) > 0:
@@ -26,13 +26,15 @@ def solve( interList, streetList, carList):
         for street in inter.inComm:
             score = street.numCar
             if score != 0:
-                inter.solution[street.name] = street.numCar * street.lenght
-                total += street.numCar * street.lenght    
+                inter.solution[street.name] = street.numCar
+                total += street.numCar
         
+        norm = 4
         for streetName, num in inter.solution.items():
-            if int(30 * num/total) > 0: 
-                inter.solution2[streetName] = int(30 * num/total)
-
+            if int(norm * num/total) > 0: 
+                inter.solution2[streetName] = int(norm * num/total)
+            else:
+                inter.solution2[streetName] = 1
 
         print(inter.idx, ['{}:{}'.format(x.name,x.numCar) for x in inter.inComm])
 
