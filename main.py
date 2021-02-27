@@ -1,4 +1,4 @@
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 from car import Car
 from street import Street
 from intersect import Inter
@@ -20,18 +20,17 @@ def dump(filename, interList):
             f.write('{} {}\n'.format(street, num))
     f.close()
 
-def solve( interList, streetList, carList):
+def solve( interList, streetList, carList, avgStreetLenght):
     for inter in interList:
         total = 0
         for street in inter.inComm:
-            score = street.numCar
-            if score != 0:
+            if street.numCar != 0:
                 inter.solution[street.name] = street.numCar
-                total += street.numCar
+                total += street.numCar #/street.lenght
         
-        norm = 4
+        norm = 5
         for streetName, num in inter.solution.items():
-            if int(norm * num/total) > 0: 
+            if int(norm * num/total) > 1:
                 inter.solution2[streetName] = int(norm * num/total)
             else:
                 inter.solution2[streetName] = 1
@@ -64,13 +63,23 @@ def readF(filename):
             inters.append(
                 streetList[path].end
             )
-        for path in paths[1:]:
+        for path in paths:
             totalPath+= streetList[path].lenght
-            streetList[path].numCar += 1 
-        car = Car(i, paths[1:], totalPath, inters)
+        car = Car(i, paths, totalPath, inters)
         carList.append(
             car
         )
+    
+    carList = sorted(carList, key=attrgetter('totalPath')) 
+
+    for car in carList[0:nCar//10]:
+        for street in car.streets:
+            streetList[street].numCar += 50
+
+    for car in carList[nCar//10:nCar]:
+        for street in car.streets:
+            streetList[street].numCar += 1
+
 
     for name, street in streetList.items():
         interList[street.start].upComm.append(streetList[name])
@@ -91,7 +100,7 @@ def readF(filename):
     print("-- bonus", bonus )
 
 
-    solve( interList, streetList, carList)
+    solve( interList, streetList, carList, avgStreetLenght)
     dump(filename, interList)
     # for i in range(nInter):
     #     print(interList[i])
